@@ -11,9 +11,10 @@ public class Array {
         int[] Nilai= new int[n];
 
         for(int i = 0; i < n; i++){
-            System.out.print("Masukan nama  : ");
+            System.out.println("Mahasiswa ke : "+(i +1));
+            System.out.print("Nama  : ");
             Nama[i]= inputan.next();
-            System.out.print("Masukan nilai  : ");
+            System.out.print("Nilai  : ");
             Nilai[i]= inputan.nextInt();
         }
         System.out.println("==================================");
@@ -25,4 +26,3 @@ public class Array {
     }
         
 }
-
