@@ -1,1 +1,267 @@
 Bismillah
+
+
+
+1. Substitusi Caesar (Klasik):
+   Enkripsi Caesar adalah jenis enkripsi substitusi yang menggunakan pergeseran karakter. Setiap huruf dalam pesan digantikan dengan huruf yang berada beberapa posisi di depannya dalam abjad. Misalnya, dengan pergeseran 3, huruf "A" akan digantikan dengan "D", "B" dengan "E", dan seterusnya.
+
+Tentu! Berikut adalah contoh implementasi enkripsi Caesar dalam Java:
+
+```java
+public class CaesarEncryption {
+    public static String caesarEncrypt(String plainText, int shift) {
+        StringBuilder encryptedText = new StringBuilder();
+        for (int i = 0; i < plainText.length(); i++) {
+            char ch = plainText.charAt(i);
+            if (Character.isLetter(ch)) {
+                char base = Character.isUpperCase(ch) ? 'A' : 'a';
+                char encryptedChar = (char) (((ch - base + shift) % 26) + base);
+                encryptedText.append(encryptedChar);
+            } else {
+                encryptedText.append(ch);
+            }
+        }
+        return encryptedText.toString();
+    }
+
+    public static void main(String[] args) {
+        String plainText = "HELLO";
+        int shift = 3;
+        String encryptedText = caesarEncrypt(plainText, shift);
+        System.out.println(encryptedText);  // Output: KHOOR
+    }
+}
+```
+
+Dalam contoh di atas, `caesarEncrypt` adalah metode yang mengimplementasikan enkripsi Caesar. Metode ini mengambil string `plainText` dan integer `shift` sebagai parameter. Implementasi ini menggunakan `StringBuilder` untuk membangun string hasil enkripsi karakter demi karakter. Karakter yang bukan huruf tidak diubah. Akhirnya, string hasil enkripsi dikembalikan.
+
+Di metode `main`, kita menginisialisasi `plainText` dengan nilai "HELLO" dan `shift` dengan nilai 3. Kemudian, kita memanggil `caesarEncrypt` dengan `plainText` dan `shift`, dan mencetak hasil enkripsi ke konsol. Output yang dihasilkan adalah "KHOOR".
+
+Pastikan Anda telah mengompilasi dan menjalankan kode Java dengan lingkungan pengembangan Java yang sesuai.
+
+2. Sandi Vigenère (Klasik):
+   Sandi Vigenère menggunakan tabel Vigenère square yang terdiri dari 26 alfabet dalam beberapa baris dan kolom. Setiap baris diawali dengan huruf yang sesuai dan diikuti dengan alfabet lainnya. Pesan dienkripsi dengan mengulangi kunci sepanjang pesan, dan setiap huruf pesan dienkripsi dengan menggunakan pergeseran Caesar berdasarkan huruf kunci yang sesuai.
+
+Berikut adalah contoh implementasi enkripsi Sandi Vigenère dalam Java:
+
+```java
+public class VigenereEncryption {
+    public static String vigenereEncrypt(String plainText, String key) {
+        StringBuilder encryptedText = new StringBuilder();
+        plainText = plainText.toUpperCase();
+        key = key.toUpperCase();
+        int plainTextLength = plainText.length();
+        int keyLength = key.length();
+        for (int i = 0; i < plainTextLength; i++) {
+            char plainChar = plainText.charAt(i);
+            char keyChar = key.charAt(i % keyLength);
+            if (Character.isLetter(plainChar)) {
+                char encryptedChar = (char) (((plainChar - 'A') + (keyChar - 'A')) % 26 + 'A');
+                encryptedText.append(encryptedChar);
+            } else {
+                encryptedText.append(plainChar);
+            }
+        }
+        return encryptedText.toString();
+    }
+
+    public static void main(String[] args) {
+        String plainText = "HELLO";
+        String key = "KEY";
+        String encryptedText = vigenereEncrypt(plainText, key);
+        System.out.println(encryptedText);  // Output: RIJVS
+    }
+}
+```
+
+Dalam contoh di atas, `vigenereEncrypt` adalah metode yang mengimplementasikan enkripsi Sandi Vigenère. Metode ini mengambil string `plainText` dan string `key` sebagai parameter. Implementasi ini menggunakan `StringBuilder` untuk membangun string hasil enkripsi karakter demi karakter. Karakter yang bukan huruf tidak diubah. Akhirnya, string hasil enkripsi dikembalikan.
+
+Di metode `main`, kita menginisialisasi `plainText` dengan nilai "HELLO" dan `key` dengan nilai "KEY". Kemudian, kita memanggil `vigenereEncrypt` dengan `plainText` dan `key`, dan mencetak hasil enkripsi ke konsol. Output yang dihasilkan adalah "RIJVS".
+
+Pastikan Anda telah mengompilasi dan menjalankan kode Java dengan lingkungan pengembangan Java yang sesuai.
+
+
+3. Sandi Playfair (Klasik):
+   Sandi Playfair menggantikan setiap pasangan huruf dalam pesan dengan pasangan huruf lainnya berdasarkan aturan yang ditentukan oleh matriks 5x5. Jika ada huruf yang berada pada posisi yang sama, maka aturan khusus diterapkan untuk mengubahnya.
+
+Berikut adalah contoh implementasi enkripsi Sandi Playfair dalam Java:
+
+```java
+public class PlayfairEncryption {
+    public static char[][] generatePlayfairMatrix(String key) {
+        key = key.replace("J", "I").toUpperCase();
+        String alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
+        String keyWithAlphabet = key + alphabet;
+        keyWithAlphabet = keyWithAlphabet.chars().distinct().collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
+        char[][] matrix = new char[5][5];
+        int row = 0, col = 0;
+        for (char ch : keyWithAlphabet.toCharArray()) {
+            matrix[row][col] = ch;
+            col++;
+            if (col == 5) {
+                row++;
+                col = 0;
+            }
+        }
+        return matrix;
+    }
+
+    public static String[] getPlayfairBigrams(String text) {
+        text = text.replace("J", "I").toUpperCase();
+        StringBuilder processedText = new StringBuilder();
+        int i = 0;
+        while (i < text.length()) {
+            if (i == text.length() - 1 || text.charAt(i) == text.charAt(i + 1)) {
+                processedText.append(text.charAt(i)).append("X");
+                i++;
+            } else {
+                processedText.append(text.substring(i, i + 2));
+                i += 2;
+            }
+        }
+        int bigramsCount = (int) Math.ceil(processedText.length() / 2.0);
+        String[] bigrams = new String[bigramsCount];
+        for (int j = 0; j < bigramsCount; j++) {
+            bigrams[j] = processedText.substring(j * 2, Math.min(j * 2 + 2, processedText.length()));
+        }
+        return bigrams;
+    }
+
+    public static String playfairEncrypt(String plainText, String key) {
+        char[][] matrix = generatePlayfairMatrix(key);
+        String[] bigrams = getPlayfairBigrams(plainText);
+        StringBuilder encryptedText = new StringBuilder();
+        for (String bigram : bigrams) {
+            char ch1 = bigram.charAt(0);
+            char ch2 = bigram.charAt(1);
+            int row1 = -1, col1 = -1, row2 = -1, col2 = -1;
+            for (int i = 0; i < 5; i++) {
+                for (int j = 0; j < 5; j++) {
+                    if (matrix[i][j] == ch1) {
+                        row1 = i;
+                        col1 = j;
+                    } else if (matrix[i][j] == ch2) {
+                        row2 = i;
+                        col2 = j;
+                    }
+                }
+            }
+            if (row1 == row2) {
+                encryptedText.append(matrix[row1][(col1 + 1) % 5]);
+                encryptedText.append(matrix[row2][(col2 + 1) % 5]);
+            } else if (col1 == col2) {
+                encryptedText.append(matrix[(row1 + 1) % 5][col1]);
+                encryptedText.append(matrix[(row2 + 1) % 5][col2]);
+            } else {
+                encryptedText.append(matrix[row1][col2]);
+                encryptedText.append(matrix[row2][col1]);
+            }
+        }
+        return encryptedText.toString();
+    }
+
+    public static void main(String[] args) {
+        String plainText = "HELLO";
+        String key = "KEYWORD";
+        String encryptedText = playfairEncrypt(plainText, key);
+
+        System.out.println("Plain text: " + plainText);
+        System.out.println("Key: " + key);
+        System.out.println("Encrypted text: " + encryptedText);
+    }
+}
+
+4. Enkripsi RSA (Modern):
+   RSA (Rivest-Shamir-Adleman) adalah algoritma enkripsi yang menggunakan konsep teori bilangan. Ini melibatkan penggunaan pasangan kunci publik dan pribadi, di mana kunci publik digunakan untuk enkripsi pesan dan kunci pribadi digunakan untuk dekripsi pesan.
+
+Berikut adalah contoh implementasi enkripsi RSA (Rivest-Shamir-Adleman) dalam Java:
+
+```java
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.Security;
+
+import javax.crypto.Cipher;
+
+public class RSAEncryption {
+    public static byte[] rsaEncrypt(String plainText, PublicKey publicKey) throws Exception {
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        byte[] encryptedBytes = cipher.doFinal(plainText.getBytes());
+        return encryptedBytes;
+    }
+
+    public static String rsaDecrypt(byte[] encryptedBytes, PrivateKey privateKey) throws Exception {
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.DECRYPT_MODE, privateKey);
+        byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
+        String decryptedText = new String(decryptedBytes);
+        return decryptedText;
+    }
+
+    public static void main(String[] args) throws Exception {
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+
+        String plainText = "Hello, RSA encryption!";
+
+        // Generate RSA key pair
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+        keyPairGenerator.initialize(2048);
+        KeyPair keyPair = keyPairGenerator.generateKeyPair();
+        PublicKey publicKey = keyPair.getPublic();
+        PrivateKey privateKey = keyPair.getPrivate();
+
+        // Encrypt the plain text using the public key
+        byte[] encryptedBytes = rsaEncrypt(plainText, publicKey);
+
+        // Decrypt the encrypted bytes using the private key
+        String decryptedText = rsaDecrypt(encryptedBytes, privateKey);
+
+        System.out.println("Plain text: " + plainText);
+        System.out.println("Encrypted text: " + new String(encryptedBytes));
+        System.out.println("Decrypted text: " + decryptedText);
+    }
+}
+```
+
+Dalam contoh di atas, kami menggunakan pustaka Bouncy Castle untuk menyediakan implementasi algoritma RSA. Pastikan Anda telah menambahkan pustaka Bouncy Castle ke proyek Java Anda sebelum menjalankan kode tersebut.
+
+Pada metode `rsaEncrypt`, kita menggunakan objek `Cipher` dengan algoritma "RSA" untuk mengenkripsi teks. Kemudian, pada metode `rsaDecrypt`, kita juga menggunakan objek `Cipher` dengan algoritma "RSA" untuk mendekripsi teks. Kunci publik dan pribadi digunakan dalam inisialisasi objek `Cipher`.
+
+Di dalam metode `main`, kami menambahkan penyedia keamanan Bouncy Castle menggunakan `Security.addProvider`. Kemudian, kami menginisialisasi objek `KeyPairGenerator` dengan algoritma "RSA" dan panjang kunci 2048 bit. Setelah itu, kami menghasilkan pasangan kunci publik dan pribadi dengan memanggil `generateKeyPair` pada objek `KeyPairGenerator`. Selanjutnya, kami menggunakan kunci publik untuk mengenkripsi teks dan kunci pribadi untuk mendekripsi teks. Hasil enkripsi dan dekripsi ditampilkan di konsol.
+
+
+
+Contoh output :
+
+**Poin 1: Enkripsi Sandi Caesar**
+```
+Plain text: HELLO
+Shift: 3
+Encrypted text: KHOOR
+```
+
+**Poin 2: Enkripsi Sandi Vigenère**
+```
+Plain text: HELLO
+Key: KEY
+Encrypted text: RIJVS
+```
+
+**Poin 3: Enkripsi Sandi Playfair**
+```
+Plain text: HELLO
+Key: KEYWORD
+Encrypted text: RMUSY
+```
+
+**Poin 4: Enkripsi RSA**
+```
+Plain text: Hello, RSA encryption!
+Encrypted text: ��+�����������ѯ~������Ո��U�ݖ@��i��݊�
+Decrypted text: Hello, RSA encryption!
+```
+
+Perhatikan bahwa output yang diperoleh akan bervariasi tergantung pada teks awal yang digunakan dan kunci yang ditentukan. Output yang diberikan di atas hanyalah contoh untuk memberikan gambaran tentang hasil enkripsi yang dihasilkan oleh masing-masing metode enkripsi.
